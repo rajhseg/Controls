@@ -1,0 +1,85 @@
+﻿<UserControl x:Class="WPFControls.TimerControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WPFControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <local:TickToAngleConverter x:Key="tickconv" />
+
+        <Style TargetType="ProgressBar">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Grid>
+
+                            <Ellipse Fill="{TemplateBinding Background}" Stroke="Gray"/>
+                            <Ellipse Fill="White" Stroke="Gray" Margin="20" />
+
+                            <local:TimerArc Stroke="{TemplateBinding BorderBrush}" StrokeThickness="20" Margin="0">
+                                <local:TimerArc.Start>
+                                    <MultiBinding Converter="{StaticResource tickconv}">
+                                        <Binding Path="Minimum" 
+                                     RelativeSource="{RelativeSource TemplatedParent}"/>
+                                        <Binding Path="." 
+                                         RelativeSource="{RelativeSource TemplatedParent}"/>
+                                    </MultiBinding>
+                                </local:TimerArc.Start>
+                                <local:TimerArc.End>
+                                    <MultiBinding Converter="{StaticResource tickconv}">
+                                        <Binding Path="Value" 
+                                          RelativeSource="{RelativeSource TemplatedParent}"/>
+                                        <Binding Path="." 
+                                          RelativeSource="{RelativeSource TemplatedParent}"/>
+                                    </MultiBinding>
+                                </local:TimerArc.End>
+                            </local:TimerArc>
+
+                            <TextBlock x:Name="counter"
+                                       Text="{Binding Value,
+                                       RelativeSource={RelativeSource TemplatedParent},
+                                              StringFormat=\{0:0\}}"
+                                       Foreground="{Binding CountForeColor,
+                                   RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       FontSize="35"
+                                       FontWeight="Bold"
+                                       FontStyle="Italic"/>
+
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+    <Viewbox>
+        <ProgressBar Height="150" Width="150" x:Name="timer"
+                     Minimum="0" Maximum="60"  Value="0"  BorderBrush="Orange">
+            <ProgressBar.Background>
+                <LinearGradientBrush>
+                    <GradientStop Color="#FFF9F9F9" Offset="0"/>
+                    <GradientStop Color="#FFd9d9d9" Offset="1"/>
+                </LinearGradientBrush>
+            </ProgressBar.Background>
+        </ProgressBar>
+    </Viewbox>
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Window.Loaded">
+            <BeginStoryboard>
+                <Storyboard RepeatBehavior="1">
+                    <DoubleAnimation From="{Binding Maximum,ElementName=timer}"
+                                     To="{Binding Minimum,ElementName=timer}"
+                                     Storyboard.TargetName="timer"
+                                     Storyboard.TargetProperty="Value"
+                                     Duration="0:1">
+
+                    </DoubleAnimation>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+</UserControl>
